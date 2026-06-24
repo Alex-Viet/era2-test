@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+@import '@fontsource/geist-sans/400.css';
+@import '@fontsource/geist-sans/500.css';
+@import '@fontsource/geist-sans/600.css';
+@import '@fontsource/geist-sans/700.css';
+@import '@fontsource/geist-mono/400.css';
+@import '@fontsource/geist-mono/500.css';
+
+@theme {
+  /* ERA2 warm coal palette (from Figma Foundations) */
+  --color-era-bg: #0f0e0d;
+  --color-era-bg-1: #161412;
+  --color-era-bg-2: #1c1916;
+  --color-era-bg-3: #242019;
+  --color-era-line: #2e2924;
+  --color-era-fg: #f5f0eb;
+  --color-era-fg-dim: #c9bfb4;
+  --color-era-fg-mute: #9a8f84;
+  --color-era-fg-low: #6b635c;
+  --color-era-accent: #e85420;
+  --color-era-accent-2: #f07040;
+  --color-era-accent-soft: rgba(232, 84, 32, 0.15);
+  --color-era-accent-hi: #ff6b35;
+
+  --color-status-queued: #9a8f84;
+  --color-status-running: #e85420;
+  --color-status-done: #4ade80;
+  --color-status-failed: #f87171;
+  --color-status-canceled: #6b635c;
+
+  --font-sans: 'Geist Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-era-bg);
+    color: var(--color-era-fg);
+  }
+
+  #root {
+    min-height: 100dvh;
+  }
+}
