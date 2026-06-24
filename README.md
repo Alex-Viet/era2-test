@@ -72,8 +72,8 @@ npm run lint
 1. ✅ **Этап 0** — scaffold проекта (Vite, FSD, роутинг, токены)
 2. ✅ **Этап 1** — entities: типы и seed-данные
 3. ✅ **Этап 2** — queueReducer (конечный автомат)
-4. ⬜ Этап 3 — queueEngine (мок-движок)
-5. ⬜ Этап 4 — селекторы + localStorage
+4. ✅ **Этап 3** — queueEngine (мок-движок) + QueueProvider + useQueue
+5. ⬜ Этап 4 — селекторы + localStorage persistence
 6. ⬜ Этап 5–11 — UI, виджет, статус-бар, адаптив
 
 Подробное ТЗ — в файле `тз.md`.
