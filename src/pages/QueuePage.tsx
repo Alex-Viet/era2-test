@@ -1,15 +1,15 @@
 import { cn } from '@/shared/lib';
 import { Chip } from '@/shared/ui';
 import {
-  formatCredits,
-  formatDurationSeconds,
-  formatEtaSeconds,
-  formatQueuePosition,
-  ProgressBar,
   QUEUE_STATUS_FILTERS,
-  StatusBadge,
+  TaskCard,
+  TaskRow,
   useQueue,
 } from '@/features/generation-queue';
+
+function handleDownloadStub(taskId: string) {
+  console.info('[ERA2] Download stub:', taskId);
+}
 
 export function QueuePage() {
   const {
@@ -22,7 +22,17 @@ export function QueuePage() {
     setStatusFilter,
     setSortOrder,
     setSearchInput,
+    cancelTask,
+    retryTask,
+    deleteTask,
   } = useQueue();
+
+  const taskActions = {
+    onCancel: cancelTask,
+    onRetry: retryTask,
+    onDownload: handleDownloadStub,
+    onDelete: deleteTask,
+  };
 
   return (
     <div className={cn('flex flex-1 flex-col gap-6 px-6 py-10')}>
@@ -32,7 +42,7 @@ export function QueuePage() {
         </h1>
         <p className={cn('mt-2 text-era-fg-dim')}>
           {initStatus === 'loading' && 'Загрузка очереди…'}
-          {initStatus === 'ready' && 'Этап 5 · UI-примитивы и форматтеры'}
+          {initStatus === 'ready' && 'Этап 6 · TaskRow / TaskCard / TaskActions'}
           {initStatus === 'error' && 'Ошибка загрузки'}
         </p>
       </div>
@@ -108,49 +118,9 @@ export function QueuePage() {
               </li>
             ) : (
               visibleTasks.map((task) => (
-                <li
-                  key={task.id}
-                  className={cn(
-                    'rounded-xl border border-era-line bg-era-bg-1 p-4',
-                  )}
-                >
-                  <div className={cn('flex flex-wrap items-center gap-2')}>
-                    <StatusBadge status={task.status} />
-                    <span className={cn('font-mono text-xs text-era-fg-mute')}>
-                      {task.model}
-                    </span>
-                    <span className={cn('text-xs text-era-fg-dim')}>
-                      {formatCredits(task.credits)}
-                    </span>
-                    {formatEtaSeconds(task.etaSeconds) && (
-                      <span className={cn('text-xs text-era-fg-dim')}>
-                        {formatEtaSeconds(task.etaSeconds)}
-                      </span>
-                    )}
-                    {formatDurationSeconds(task.durationSeconds) && (
-                      <span className={cn('text-xs text-era-fg-dim')}>
-                        {formatDurationSeconds(task.durationSeconds)}
-                      </span>
-                    )}
-                    {formatQueuePosition(task.queuePosition) && (
-                      <span className={cn('text-xs text-era-fg-dim')}>
-                        {formatQueuePosition(task.queuePosition)}
-                      </span>
-                    )}
-                  </div>
-                  <p className={cn('mt-2 line-clamp-2 text-sm text-era-fg')}>
-                    {task.prompt}
-                  </p>
-                  {task.status === 'running' && (
-                    <div className={cn('mt-3')}>
-                      <ProgressBar value={task.progress} />
-                    </div>
-                  )}
-                  {task.status === 'failed' && task.error && (
-                    <p className={cn('mt-2 text-sm text-status-failed')}>
-                      {task.error}
-                    </p>
-                  )}
+                <li key={task.id} className={cn('list-none')}>
+                  <TaskRow task={task} {...taskActions} />
+                  <TaskCard task={task} {...taskActions} />
                 </li>
               ))
             )}

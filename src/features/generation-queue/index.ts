@@ -57,3 +57,6 @@ export { getStatusLabel, STATUS_LABELS } from './lib/statusLabels';
 
 export { ProgressBar, type ProgressBarProps } from './ui/ProgressBar';
 export { StatusBadge, type StatusBadgeProps } from './ui/StatusBadge';
+export { TaskActions, type TaskActionsProps } from './ui/TaskActions';
+export { TaskCard, type TaskCardProps } from './ui/TaskCard';
+export { TaskRow, type TaskRowProps } from './ui/TaskRow';
