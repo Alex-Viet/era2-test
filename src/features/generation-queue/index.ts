@@ -2,7 +2,7 @@ export type { QueueAction, QueueState } from './model/queueReducer';
 export type { QueueContextValue, QueueInitStatus } from './model/queueContext';
 export type {
   QueueSortOrder,
-  QueueStats,
+  QueueStats as QueueStatsCounts,
   QueueStatusFilter,
   QueueTypeFilter,
   QueueViewParams,
@@ -26,6 +26,8 @@ export {
   filterTasksByType,
   hasTasksWithStatus,
   QUEUE_STATUS_FILTERS,
+  QUEUE_SORT_OPTIONS,
+  QUEUE_TYPE_FILTERS,
   selectActiveTasks,
   selectAverageRunningProgress,
   selectQueueStats,
@@ -55,6 +57,8 @@ export {
 
 export { getStatusLabel, STATUS_LABELS } from './lib/statusLabels';
 
+export { QueueStats, type QueueStatsProps } from './ui/QueueStats';
+export { QueueToolbar, type QueueToolbarProps } from './ui/QueueToolbar';
 export { ProgressBar, type ProgressBarProps } from './ui/ProgressBar';
 export { StatusBadge, type StatusBadgeProps } from './ui/StatusBadge';
 export { TaskActions, type TaskActionsProps } from './ui/TaskActions';

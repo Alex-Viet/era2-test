@@ -34,6 +34,25 @@ export const QUEUE_STATUS_FILTERS: readonly {
   { value: 'failed', label: 'Ошибка' },
 ] as const;
 
+export const QUEUE_TYPE_FILTERS: readonly {
+  value: QueueTypeFilter;
+  label: string;
+}[] = [
+  { value: 'all', label: 'Все типы' },
+  { value: 'text', label: 'Текст' },
+  { value: 'image', label: 'Изображение' },
+  { value: 'video', label: 'Видео' },
+  { value: 'audio', label: 'Аудио' },
+] as const;
+
+export const QUEUE_SORT_OPTIONS: readonly {
+  value: QueueSortOrder;
+  label: string;
+}[] = [
+  { value: 'newest', label: 'Сначала новые' },
+  { value: 'oldest', label: 'Сначала старые' },
+] as const;
+
 /** Счётчики для карточек сводки (без canceled — по ТЗ 4 карточки). */
 export function selectQueueStats(tasks: GenerationTask[]): QueueStats {
   const stats: QueueStats = { queued: 0, running: 0, done: 0, failed: 0 };

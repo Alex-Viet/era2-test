@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib';
-import { Chip } from '@/shared/ui';
 import {
-  QUEUE_STATUS_FILTERS,
+  QueueStats,
+  QueueToolbar,
   TaskCard,
   TaskRow,
   useQueue,
@@ -18,9 +18,11 @@ export function QueuePage() {
     visibleTasks,
     statusFilter,
     sortOrder,
+    typeFilter,
     searchInput,
     setStatusFilter,
     setSortOrder,
+    setTypeFilter,
     setSearchInput,
     cancelTask,
     retryTask,
@@ -42,74 +44,25 @@ export function QueuePage() {
         </h1>
         <p className={cn('mt-2 text-era-fg-dim')}>
           {initStatus === 'loading' && 'Загрузка очереди…'}
-          {initStatus === 'ready' && 'Этап 6 · TaskRow / TaskCard / TaskActions'}
+          {initStatus === 'ready' && 'Этап 7 · QueueStats / QueueToolbar'}
           {initStatus === 'error' && 'Ошибка загрузки'}
         </p>
       </div>
 
       {initStatus === 'ready' && (
         <>
-          <div className={cn('grid grid-cols-2 gap-3 sm:grid-cols-4')}>
-            {(
-              [
-                ['queued', stats.queued, 'В очереди'],
-                ['running', stats.running, 'Идёт'],
-                ['done', stats.done, 'Готово'],
-                ['failed', stats.failed, 'Ошибка'],
-              ] as const
-            ).map(([key, count, label]) => (
-              <div
-                key={key}
-                className={cn(
-                  'rounded-lg border border-era-line bg-era-bg-2 px-4 py-3',
-                )}
-              >
-                <div className={cn('text-xs text-era-fg-mute')}>{label}</div>
-                <div className={cn('mt-1 font-mono text-xl font-medium')}>
-                  {count}
-                </div>
-              </div>
-            ))}
-          </div>
+          <QueueStats stats={stats} />
 
-          <div className={cn('flex flex-col gap-3')}>
-            <div className={cn('flex flex-wrap gap-2')}>
-              {QUEUE_STATUS_FILTERS.map((chip) => (
-                <Chip
-                  key={chip.value}
-                  selected={statusFilter === chip.value}
-                  onClick={() => setStatusFilter(chip.value)}
-                >
-                  {chip.label}
-                </Chip>
-              ))}
-            </div>
-
-            <div className={cn('flex flex-wrap gap-3')}>
-              <input
-                type="search"
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder="Поиск по промпту…"
-                className={cn(
-                  'min-w-[220px] flex-1 rounded-lg border border-era-line',
-                  'bg-era-bg-1 px-3 py-2 text-sm outline-none focus:border-era-accent',
-                )}
-              />
-              <select
-                value={sortOrder}
-                onChange={(event) =>
-                  setSortOrder(event.target.value as 'newest' | 'oldest')
-                }
-                className={cn(
-                  'rounded-lg border border-era-line bg-era-bg-1 px-3 py-2 text-sm',
-                )}
-              >
-                <option value="newest">Сначала новые</option>
-                <option value="oldest">Сначала старые</option>
-              </select>
-            </div>
-          </div>
+          <QueueToolbar
+            statusFilter={statusFilter}
+            sortOrder={sortOrder}
+            searchInput={searchInput}
+            typeFilter={typeFilter}
+            onStatusFilterChange={setStatusFilter}
+            onSortOrderChange={setSortOrder}
+            onSearchInputChange={setSearchInput}
+            onTypeFilterChange={setTypeFilter}
+          />
 
           <ul className={cn('space-y-3')}>
             {visibleTasks.length === 0 ? (

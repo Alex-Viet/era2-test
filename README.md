@@ -78,7 +78,8 @@ npm run lint
 4. ✅ **Этап 3** — queueEngine (мок-движок) + QueueProvider + useQueue
 5. ✅ **Этап 5** — UI-примитивы (Button, Chip, StatusBadge, ProgressBar, formatEta)
 6. ✅ **Этап 6** — TaskRow, TaskCard, TaskActions
-7. ⬜ Этап 7 — QueueStats, QueueToolbar
-8. ⬜ Этап 8–11 — состояния экрана, виджет, статус-бар, адаптив
+7. ✅ **Этап 7** — QueueStats, QueueToolbar
+8. ⬜ Этап 8 — EmptyState, LoadingState, ErrorState
+9. ⬜ Этап 9–11 — виджет, статус-бар, адаптив
 
 Подробное ТЗ — в файле `тз.md`.
