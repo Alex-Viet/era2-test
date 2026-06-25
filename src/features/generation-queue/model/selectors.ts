@@ -97,6 +97,38 @@ export function selectAverageRunningProgress(tasks: GenerationTask[]): number {
   return Math.round(total / running.length);
 }
 
+/**
+ * Усреднённый прогресс всех активных задач (`queued` = 0%, `running` = progress).
+ * Для заголовка статус-бара «N активны · X%».
+ */
+export function selectAverageActiveProgress(tasks: GenerationTask[]): number {
+  const active = selectActiveTasks(tasks);
+  if (active.length === 0) {
+    return 0;
+  }
+
+  const total = active.reduce(
+    (sum, task) => sum + (task.status === 'running' ? task.progress : 0),
+    0,
+  );
+
+  return Math.round(total / active.length);
+}
+
+/** До 3 задач для превью в статус-баре: сначала running, затем queued (FIFO). */
+export function selectStatusBarPreviewTasks(
+  tasks: GenerationTask[],
+  limit = 3,
+): GenerationTask[] {
+  const active = selectActiveTasks(tasks);
+  const running = active.filter((task) => task.status === 'running');
+  const queued = active
+    .filter((task) => task.status === 'queued')
+    .sort((a, b) => a.createdAt - b.createdAt);
+
+  return [...running, ...queued].slice(0, limit);
+}
+
 export function filterTasksByStatus(
   tasks: GenerationTask[],
   statusFilter: QueueStatusFilter,

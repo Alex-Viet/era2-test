@@ -26,6 +26,15 @@
 
 Решение: **react-router-dom** с layout-обёрткой в `app/layouts/AppLayout.tsx`.
 
+## Глобальный статус-бар
+
+- Компонент `GenerationStatusBar` в `features/generation-queue`, монтируется в `AppLayout`
+- Читает тот же `QueueProvider` / `useQueue`, что и страница очереди
+- Скрыт, если нет активных задач (`queued` + `running`) или открыта страница `/queue`
+- **1 задача** — компактная карточка; **несколько** — раскрытый виджет со сворачиванием в пилюлю
+- Клик / «Открыть очередь →» — `navigate('/queue')`
+- Desktop/tablet: fixed снизу-справа (~24px); mobile: полноширинная панель с `safe-area`
+
 ## Персистентность (localStorage)
 
 - Ключ: `era2:generation-queue:v1`
@@ -81,7 +90,7 @@ npm run lint
 7. ✅ **Этап 7** — QueueStats, QueueToolbar
 8. ✅ **Этап 8** — EmptyState, LoadingState, ErrorState
 9. ✅ **Этап 9** — виджет GenerationQueue + шапка «Очистить готовые»
-10. ⬜ Этап 10 — глобальный статус-бар
+10. ✅ **Этап 10** — глобальный статус-бар
 11. ⬜ Этап 11 — адаптив и полировка
 
 Подробное ТЗ — в файле `тз.md`.

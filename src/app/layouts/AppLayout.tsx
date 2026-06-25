@@ -1,4 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
+import { GenerationStatusBar } from '@/features/generation-queue';
 import { cn } from '@/shared/lib';
 
 export function AppLayout() {
@@ -32,6 +33,7 @@ export function AppLayout() {
       <main className={cn('flex flex-1 flex-col')}>
         <Outlet />
       </main>
+      <GenerationStatusBar />
     </div>
   );
 }

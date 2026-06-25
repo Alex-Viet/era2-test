@@ -29,8 +29,10 @@ export {
   QUEUE_SORT_OPTIONS,
   QUEUE_TYPE_FILTERS,
   selectActiveTasks,
+  selectAverageActiveProgress,
   selectAverageRunningProgress,
   selectQueueStats,
+  selectStatusBarPreviewTasks,
   selectVisibleTasks,
   sortTasks,
 } from './model/selectors';
@@ -72,3 +74,4 @@ export {
 } from './ui/states/EmptyState';
 export { ErrorState, type ErrorStateProps } from './ui/states/ErrorState';
 export { LoadingState } from './ui/states/LoadingState';
+export { GenerationStatusBar } from './ui/GenerationStatusBar';
