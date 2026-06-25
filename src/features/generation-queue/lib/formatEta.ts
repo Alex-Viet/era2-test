@@ -48,7 +48,7 @@ export function formatDurationSeconds(
 
 /** Форматирование стоимости в кредитах. */
 export function formatCredits(credits: number): string {
-  return `${credits} кр.`;
+  return `${credits} cr`;
 }
 
 /** Позиция в очереди (1-based). */
@@ -57,7 +57,19 @@ export function formatQueuePosition(position: number | undefined): string | null
     return null;
   }
 
-  return `#${position} в очереди`;
+  return `позиция ${position} в очереди`;
+}
+
+/** Длительность для завершённых задач. */
+export function formatDoneDuration(
+  seconds: number | undefined,
+): string | null {
+  const formatted = formatDurationSeconds(seconds);
+  if (!formatted) {
+    return null;
+  }
+
+  return `готово за ${formatted}`;
 }
 
 /** Процент прогресса для отображения. */

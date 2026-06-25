@@ -51,6 +51,7 @@ export { useQueue } from './model/useQueue';
 
 export {
   formatCredits,
+  formatDoneDuration,
   formatDurationSeconds,
   formatEtaSeconds,
   formatProgress,

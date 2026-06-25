@@ -1,14 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  Download,
+  ArrowDownToLine,
   MoreHorizontal,
-  RotateCcw,
+  RotateCw,
   Trash2,
   X,
 } from 'lucide-react';
 import type { GenerationTask } from '@/entities/generation-task';
 import { cn } from '@/shared/lib';
-import { Button, IconButton } from '@/shared/ui';
 import { canCancelTask, canRetryTask } from '../model/queueReducer';
 
 export interface TaskActionsProps {
@@ -19,6 +18,40 @@ export interface TaskActionsProps {
   onDelete: (taskId: string) => void;
   compact?: boolean;
 }
+
+function ActionIconButton({
+  label,
+  onClick,
+  accent = false,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  accent?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className={cn('inline-flex')}>
+      <button
+        type="button"
+        aria-label={label}
+        title={label}
+        onClick={onClick}
+        className={cn(
+          'flex size-8 items-center justify-center rounded-lg border border-era-line',
+          'bg-era-secondary transition-colors',
+          accent
+            ? 'text-era-accent-2 hover:text-era-accent-hi'
+            : 'text-era-fg-mute hover:text-era-fg',
+        )}
+      >
+        {children}
+      </button>
+    </div>
+  );
+}
+
+const accentIconClass = cn('size-3.5 stroke-[1.75]');
 
 export function TaskActions({
   task,
@@ -61,66 +94,47 @@ export function TaskActions({
   const showDownload = task.status === 'done';
 
   return (
-    <div
-      className={cn(
-        'flex items-center gap-1',
-        compact ? 'justify-end' : 'shrink-0',
-      )}
-    >
+    <div className={cn('flex items-center gap-1.5', compact && 'justify-end')}>
       {showCancel && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onCancel(task.id)}
-        >
-          <span className={cn('inline-flex items-center gap-1.5')}>
-            <X className={cn('size-3.5')} />
-            {!compact && 'Отмена'}
-          </span>
-        </Button>
+        <ActionIconButton label="Отмена" onClick={() => onCancel(task.id)}>
+          <X className={cn(accentIconClass)} />
+        </ActionIconButton>
       )}
 
       {showRetry && (
-        <Button
-          variant="ghost"
-          size="sm"
+        <ActionIconButton
+          label="Повторить"
+          accent
           onClick={() => onRetry(task.id)}
         >
-          <span className={cn('inline-flex items-center gap-1.5')}>
-            <RotateCcw className={cn('size-3.5')} />
-            {!compact && 'Повторить'}
-          </span>
-        </Button>
+          <RotateCw className={cn(accentIconClass)} />
+        </ActionIconButton>
       )}
 
       {showDownload && (
-        <Button
-          variant="ghost"
-          size="sm"
+        <ActionIconButton
+          label="Скачать"
+          accent
           onClick={() => onDownload(task.id)}
         >
-          <span className={cn('inline-flex items-center gap-1.5')}>
-            <Download className={cn('size-3.5')} />
-            {!compact && 'Скачать'}
-          </span>
-        </Button>
+          <ArrowDownToLine className={cn(accentIconClass)} />
+        </ActionIconButton>
       )}
 
       <div className={cn('relative')} ref={menuRef}>
-        <IconButton
-          size="sm"
+        <ActionIconButton
           label="Дополнительные действия"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          <MoreHorizontal className={cn('size-4')} />
-        </IconButton>
+          <MoreHorizontal className={cn(accentIconClass)} />
+        </ActionIconButton>
 
         {menuOpen && (
           <div
             role="menu"
             className={cn(
               'absolute right-0 top-full z-10 mt-1 min-w-[140px]',
-              'rounded-lg border border-era-line bg-era-bg-2 py-1 shadow-lg',
+              'rounded-lg border border-era-line bg-era-card py-1 shadow-lg',
               'motion-safe:animate-queue-item-in',
             )}
           >

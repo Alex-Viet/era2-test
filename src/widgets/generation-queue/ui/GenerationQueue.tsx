@@ -62,25 +62,28 @@ export function GenerationQueue() {
   };
 
   return (
-    <div
-      className={cn(
-        'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6',
-        'px-4 py-6 max-[480px]:pb-8',
-        'sm:px-6 sm:py-8',
-        'lg:py-10',
-      )}
-    >
+    <div className={cn('flex flex-1 flex-col px-4 min-[481px]:px-8 lg:px-10')}>
       <div
         className={cn(
-          'flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between',
+          'mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6',
+          'py-6 max-[480px]:pb-8 lg:py-10',
+        )}
+      >
+      <div
+        className={cn(
+          'flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
         )}
       >
         <div>
-          <h1 className={cn('text-2xl font-semibold tracking-tight')}>
+          <h1
+            className={cn(
+              'text-[30px] font-bold tracking-[-0.6px] text-era-fg',
+            )}
+          >
             Очередь генераций
           </h1>
-          <p className={cn('mt-2 text-era-fg-dim')}>
-            Задачи генерации в реальном времени — статусы, прогресс и управление
+          <p className={cn('mt-1 text-[15px] text-era-fg-mute')}>
+            Все ваши задачи в реальном времени
           </p>
         </div>
 
@@ -90,6 +93,7 @@ export function GenerationQueue() {
               type="button"
               variant="outline"
               size="sm"
+              className={cn('rounded-full px-4 text-era-fg-dim')}
               onClick={handleClearDone}
             >
               Очистить готовые
@@ -122,7 +126,7 @@ export function GenerationQueue() {
           {isFilterEmpty && <EmptyState variant="no-results" />}
 
           {!isQueueEmpty && !isFilterEmpty && (
-            <ul className={cn('space-y-3')}>
+            <ul className={cn('space-y-2.5')}>
               {visibleTasks.map((task, index) => (
                 <li
                   key={task.id}
@@ -143,6 +147,7 @@ export function GenerationQueue() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

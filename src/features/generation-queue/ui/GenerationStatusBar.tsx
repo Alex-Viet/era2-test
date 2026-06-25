@@ -68,7 +68,7 @@ export function GenerationStatusBar() {
     >
       <div
         className={cn(
-          'pointer-events-auto overflow-hidden border border-era-line bg-era-bg-2 shadow-xl',
+          'pointer-events-auto overflow-hidden border border-era-line bg-era-card shadow-xl',
           'max-[480px]:rounded-t-2xl max-[480px]:border-b-0',
           'min-[481px]:rounded-2xl',
           'pb-[max(0.75rem,env(safe-area-inset-bottom))] max-[480px]:px-4 max-[480px]:pt-3',

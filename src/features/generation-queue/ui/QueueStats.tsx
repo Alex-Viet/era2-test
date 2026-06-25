@@ -1,57 +1,39 @@
 import { cn } from '@/shared/lib';
 import type { QueueStats as QueueStatsData } from '../model/selectors';
+import { STAT_DOT_COLORS } from '../lib/taskSurfaceStyles';
 
 export interface QueueStatsProps {
   stats: QueueStatsData;
 }
 
 const STAT_ITEMS = [
-  {
-    key: 'queued',
-    label: 'В очереди',
-    accent: 'text-status-queued',
-    border: 'border-era-line',
-  },
-  {
-    key: 'running',
-    label: 'Идёт',
-    accent: 'text-status-running',
-    border: 'border-era-accent/30',
-  },
-  {
-    key: 'done',
-    label: 'Готово',
-    accent: 'text-status-done',
-    border: 'border-status-done/30',
-  },
-  {
-    key: 'failed',
-    label: 'Ошибка',
-    accent: 'text-status-failed',
-    border: 'border-status-failed/30',
-  },
-] as const;
+  { key: 'queued' as const, label: 'В очереди' },
+  { key: 'running' as const, label: 'Идёт' },
+  { key: 'done' as const, label: 'Готово' },
+  { key: 'failed' as const, label: 'Ошибка' },
+];
 
 export function QueueStats({ stats }: QueueStatsProps) {
   return (
-    <div
-      className={cn(
-        'grid grid-cols-2 gap-3 lg:grid-cols-4',
-      )}
-    >
+    <div className={cn('grid grid-cols-2 gap-3 min-[481px]:grid-cols-4')}>
       {STAT_ITEMS.map((item) => (
         <div
           key={item.key}
           className={cn(
-            'rounded-xl border bg-era-bg-2 px-4 py-3',
-            item.border,
+            'flex flex-col gap-2 rounded-2xl border border-era-line bg-era-card',
+            'px-[18px] py-4',
           )}
         >
-          <div className={cn('text-xs text-era-fg-mute')}>{item.label}</div>
+          <div className={cn('flex items-center gap-2')}>
+            <span
+              className={cn('size-2 shrink-0 rounded-full', STAT_DOT_COLORS[item.key])}
+              aria-hidden
+            />
+            <div className={cn('text-[13px] text-era-fg-mute')}>{item.label}</div>
+          </div>
           <div
             className={cn(
-              'mt-1 font-mono text-2xl font-semibold tabular-nums',
-              item.accent,
+              'font-mono text-[28px] font-bold tabular-nums leading-none text-era-fg',
             )}
           >
             {stats[item.key]}

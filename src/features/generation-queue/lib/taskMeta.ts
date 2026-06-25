@@ -1,29 +1,45 @@
 import type { GenerationTask } from '@/entities/generation-task';
 import {
   formatCredits,
-  formatDurationSeconds,
+  formatDoneDuration,
   formatEtaSeconds,
   formatQueuePosition,
 } from './formatEta';
 
-/** Собирает мета-строки для пилюли модели (ETA / длительность / кредиты / очередь). */
-export function getTaskMetaItems(task: GenerationTask): string[] {
-  const items = [formatCredits(task.credits)];
-
-  const eta = formatEtaSeconds(task.etaSeconds);
-  if (eta) {
-    items.push(eta);
+/** Мета-строка справа от пилюли модели (как в макете Figma). */
+export function formatTaskMetaSuffix(task: GenerationTask): string {
+  if (task.status === 'failed') {
+    return task.error ?? 'Ошибка генерации';
   }
 
-  const duration = formatDurationSeconds(task.durationSeconds);
-  if (duration) {
-    items.push(duration);
+  if (task.status === 'canceled') {
+    return 'отменено пользователем';
   }
 
-  const position = formatQueuePosition(task.queuePosition);
-  if (position) {
-    items.push(position);
+  const parts: string[] = [];
+
+  if (task.status === 'queued') {
+    const position = formatQueuePosition(task.queuePosition);
+    if (position) {
+      parts.push(position);
+    }
   }
 
-  return items;
+  if (task.status === 'running') {
+    const eta = formatEtaSeconds(task.etaSeconds);
+    if (eta) {
+      parts.push(eta);
+    }
+  }
+
+  if (task.status === 'done') {
+    const duration = formatDoneDuration(task.durationSeconds);
+    if (duration) {
+      parts.push(duration);
+    }
+  }
+
+  parts.push(formatCredits(task.credits));
+
+  return parts.join(' · ');
 }

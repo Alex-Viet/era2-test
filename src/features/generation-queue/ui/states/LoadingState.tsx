@@ -5,12 +5,12 @@ export function LoadingState() {
     <div className={cn('flex flex-col gap-6')} aria-busy="true" aria-live="polite">
       <p className={cn('sr-only')}>Загрузка очереди генераций</p>
 
-      <div className={cn('grid grid-cols-2 gap-3 lg:grid-cols-4')}>
+      <div className={cn('grid grid-cols-2 gap-3 min-[481px]:grid-cols-4')}>
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
             className={cn(
-              'rounded-xl border border-era-line bg-era-bg-2 px-4 py-3',
+              'rounded-2xl border border-era-line bg-era-card px-[18px] py-4',
               'motion-safe:animate-pulse',
             )}
           >
@@ -50,7 +50,7 @@ export function LoadingState() {
         </div>
       </div>
 
-      <div className={cn('space-y-3 lg:hidden')}>
+      <div className={cn('space-y-2.5 max-[480px]:block min-[481px]:hidden')}>
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
@@ -70,7 +70,7 @@ export function LoadingState() {
         ))}
       </div>
 
-      <div className={cn('hidden space-y-3 lg:block')}>
+      <div className={cn('hidden space-y-2.5 min-[481px]:block')}>
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}

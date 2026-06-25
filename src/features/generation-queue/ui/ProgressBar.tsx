@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib';
 import { formatProgress } from '../lib/formatEta';
 
-type ProgressBarSize = 'sm' | 'default';
+type ProgressBarSize = 'xs' | 'sm' | 'default';
 
 export interface ProgressBarProps {
   value: number;
@@ -11,6 +11,7 @@ export interface ProgressBarProps {
 }
 
 const trackSizeClasses: Record<ProgressBarSize, string> = {
+  xs: 'h-[5px]',
   sm: 'h-1.5',
   default: 'h-2',
 };
@@ -37,14 +38,14 @@ export function ProgressBar({
       >
         <div
           className={cn(
-            'h-full rounded-full bg-era-accent transition-[width] duration-300 ease-out',
-            'motion-reduce:transition-none',
+            'h-full rounded-full bg-gradient-to-r from-era-accent to-era-accent-2',
+            'transition-[width] duration-300 ease-out motion-reduce:transition-none',
           )}
           style={{ width: `${clamped}%` }}
         />
       </div>
       {showLabel && (
-        <span className={cn('shrink-0 font-mono text-xs text-era-fg-dim')}>
+        <span className={cn('shrink-0 font-mono text-[13px] text-era-accent-2')}>
           {formatProgress(clamped)}
         </span>
       )}
