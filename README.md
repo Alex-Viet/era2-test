@@ -80,7 +80,8 @@ npm run lint
 6. ✅ **Этап 6** — TaskRow, TaskCard, TaskActions
 7. ✅ **Этап 7** — QueueStats, QueueToolbar
 8. ✅ **Этап 8** — EmptyState, LoadingState, ErrorState
-9. ⬜ Этап 9 — виджет GenerationQueue + шапка «Очистить готовые»
-10. ⬜ Этап 10–11 — статус-бар, адаптив
+9. ✅ **Этап 9** — виджет GenerationQueue + шапка «Очистить готовые»
+10. ⬜ Этап 10 — глобальный статус-бар
+11. ⬜ Этап 11 — адаптив и полировка
 
 Подробное ТЗ — в файле `тз.md`.
