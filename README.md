@@ -135,6 +135,7 @@ npm run test:watch  # watch-режим
 2. ✅ **Этап 1** — entities: типы и seed-данные
 3. ✅ **Этап 2** — queueReducer (конечный автомат)
 4. ✅ **Этап 3** — queueEngine (мок-движок) + QueueProvider + useQueue
+4. ✅ **Этап 4** — Селекторы, фильтры и персистентность
 5. ✅ **Этап 5** — UI-примитивы (Button, Chip, StatusBadge, ProgressBar, formatEta)
 6. ✅ **Этап 6** — TaskRow, TaskCard, TaskActions
 7. ✅ **Этап 7** — QueueStats, QueueToolbar
