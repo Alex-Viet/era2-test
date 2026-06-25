@@ -76,7 +76,8 @@ npm run lint
 2. ✅ **Этап 1** — entities: типы и seed-данные
 3. ✅ **Этап 2** — queueReducer (конечный автомат)
 4. ✅ **Этап 3** — queueEngine (мок-движок) + QueueProvider + useQueue
-5. ✅ **Этап 4** — селекторы + localStorage persistence
-6. ⬜ Этап 5–11 — UI, виджет, статус-бар, адаптив
+5. ✅ **Этап 5** — UI-примитивы (Button, Chip, StatusBadge, ProgressBar, formatEta)
+6. ⬜ Этап 6 — TaskRow, TaskCard, TaskActions
+7. ⬜ Этап 7–11 — тулбар, виджет, статус-бар, адаптив
 
 Подробное ТЗ — в файле `тз.md`.

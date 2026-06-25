@@ -1,6 +1,13 @@
 import { cn } from '@/shared/lib';
+import { Chip } from '@/shared/ui';
 import {
+  formatCredits,
+  formatDurationSeconds,
+  formatEtaSeconds,
+  formatQueuePosition,
+  ProgressBar,
   QUEUE_STATUS_FILTERS,
+  StatusBadge,
   useQueue,
 } from '@/features/generation-queue';
 
@@ -25,7 +32,7 @@ export function QueuePage() {
         </h1>
         <p className={cn('mt-2 text-era-fg-dim')}>
           {initStatus === 'loading' && 'Загрузка очереди…'}
-          {initStatus === 'ready' && 'Движок активен · данные в localStorage'}
+          {initStatus === 'ready' && 'Этап 5 · UI-примитивы и форматтеры'}
           {initStatus === 'error' && 'Ошибка загрузки'}
         </p>
       </div>
@@ -58,19 +65,13 @@ export function QueuePage() {
           <div className={cn('flex flex-col gap-3')}>
             <div className={cn('flex flex-wrap gap-2')}>
               {QUEUE_STATUS_FILTERS.map((chip) => (
-                <button
+                <Chip
                   key={chip.value}
-                  type="button"
+                  selected={statusFilter === chip.value}
                   onClick={() => setStatusFilter(chip.value)}
-                  className={cn(
-                    'rounded-full px-3 py-1.5 text-sm transition-colors',
-                    statusFilter === chip.value
-                      ? 'bg-era-accent text-white'
-                      : 'bg-era-bg-2 text-era-fg-dim hover:text-era-fg',
-                  )}
                 >
                   {chip.label}
-                </button>
+                </Chip>
               ))}
             </div>
 
@@ -100,18 +101,56 @@ export function QueuePage() {
             </div>
           </div>
 
-          <ul className={cn('space-y-2 font-mono text-sm text-era-fg-dim')}>
+          <ul className={cn('space-y-3')}>
             {visibleTasks.length === 0 ? (
-              <li className={cn('text-era-fg-mute')}>Нет задач по фильтру</li>
+              <li className={cn('text-sm text-era-fg-mute')}>
+                Нет задач по фильтру
+              </li>
             ) : (
               visibleTasks.map((task) => (
                 <li
                   key={task.id}
-                  className={cn('rounded-lg border border-era-line px-3 py-2')}
+                  className={cn(
+                    'rounded-xl border border-era-line bg-era-bg-1 p-4',
+                  )}
                 >
-                  {task.id} · {task.status} · {task.progress}% ·{' '}
-                  {task.prompt.slice(0, 48)}
-                  {task.prompt.length > 48 ? '…' : ''}
+                  <div className={cn('flex flex-wrap items-center gap-2')}>
+                    <StatusBadge status={task.status} />
+                    <span className={cn('font-mono text-xs text-era-fg-mute')}>
+                      {task.model}
+                    </span>
+                    <span className={cn('text-xs text-era-fg-dim')}>
+                      {formatCredits(task.credits)}
+                    </span>
+                    {formatEtaSeconds(task.etaSeconds) && (
+                      <span className={cn('text-xs text-era-fg-dim')}>
+                        {formatEtaSeconds(task.etaSeconds)}
+                      </span>
+                    )}
+                    {formatDurationSeconds(task.durationSeconds) && (
+                      <span className={cn('text-xs text-era-fg-dim')}>
+                        {formatDurationSeconds(task.durationSeconds)}
+                      </span>
+                    )}
+                    {formatQueuePosition(task.queuePosition) && (
+                      <span className={cn('text-xs text-era-fg-dim')}>
+                        {formatQueuePosition(task.queuePosition)}
+                      </span>
+                    )}
+                  </div>
+                  <p className={cn('mt-2 line-clamp-2 text-sm text-era-fg')}>
+                    {task.prompt}
+                  </p>
+                  {task.status === 'running' && (
+                    <div className={cn('mt-3')}>
+                      <ProgressBar value={task.progress} />
+                    </div>
+                  )}
+                  {task.status === 'failed' && task.error && (
+                    <p className={cn('mt-2 text-sm text-status-failed')}>
+                      {task.error}
+                    </p>
+                  )}
                 </li>
               ))
             )}

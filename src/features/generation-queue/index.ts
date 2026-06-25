@@ -44,3 +44,16 @@ export {
 export { MAX_CONCURRENT, createQueueEngine } from './model/queueEngine';
 export { QueueProvider } from './model/QueueProvider';
 export { useQueue } from './model/useQueue';
+
+export {
+  formatCredits,
+  formatDurationSeconds,
+  formatEtaSeconds,
+  formatProgress,
+  formatQueuePosition,
+} from './lib/formatEta';
+
+export { getStatusLabel, STATUS_LABELS } from './lib/statusLabels';
+
+export { ProgressBar, type ProgressBarProps } from './ui/ProgressBar';
+export { StatusBadge, type StatusBadgeProps } from './ui/StatusBadge';
