@@ -7,14 +7,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { createSeedTasks } from '@/entities/generation-task';
+import { createSeedTasks, type GenerationTask } from '@/entities/generation-task';
 import { useDebouncedValue } from '@/shared/lib/useDebouncedValue';
 import {
   clearPersistedTasks,
   loadPersistedTasks,
   savePersistedTasks,
 } from '../lib/queueStorage';
-import { QueueContext, type QueueInitStatus } from './queueContext';
+import { QueueContext, type QueueInitStatus, type QueueUndoOffer } from './queueContext';
 import { createQueueEngine } from './queueEngine';
 import {
   initialQueueState,
@@ -32,6 +32,11 @@ import {
 const INIT_DELAY_MS = 600;
 const SEARCH_DEBOUNCE_MS = 300;
 const PERSIST_DEBOUNCE_MS = 500;
+const UNDO_TIMEOUT_MS = 5000;
+
+function cloneTasksSnapshot(tasks: GenerationTask[]): GenerationTask[] {
+  return tasks.map((task) => ({ ...task }));
+}
 
 interface QueueProviderProps {
   children: ReactNode;
@@ -62,6 +67,55 @@ export function QueueProvider({
 
   const engineRef = useRef<ReturnType<typeof createQueueEngine> | null>(null);
   const initTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const undoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const undoSnapshotRef = useRef<GenerationTask[] | null>(null);
+
+  const [undoOffer, setUndoOffer] = useState<QueueUndoOffer | null>(null);
+
+  const clearUndoTimeout = useCallback(() => {
+    if (undoTimeoutRef.current !== null) {
+      clearTimeout(undoTimeoutRef.current);
+      undoTimeoutRef.current = null;
+    }
+  }, []);
+
+  const dismissUndo = useCallback(() => {
+    clearUndoTimeout();
+    undoSnapshotRef.current = null;
+    setUndoOffer(null);
+  }, [clearUndoTimeout]);
+
+  const offerUndo = useCallback(
+    (message: string, snapshot: GenerationTask[]) => {
+      clearUndoTimeout();
+      undoSnapshotRef.current = cloneTasksSnapshot(snapshot);
+      setUndoOffer({ message });
+      undoTimeoutRef.current = setTimeout(() => {
+        dismissUndo();
+      }, UNDO_TIMEOUT_MS);
+    },
+    [clearUndoTimeout, dismissUndo],
+  );
+
+  const restoreSnapshot = useCallback((snapshot: GenerationTask[]) => {
+    for (const task of stateRef.current.tasks) {
+      if (task.status === 'running') {
+        engineRef.current?.clearTaskTimer(task.id);
+      }
+    }
+
+    dispatch(queueActions.init(cloneTasksSnapshot(snapshot)));
+  }, []);
+
+  const undoLastAction = useCallback(() => {
+    const snapshot = undoSnapshotRef.current;
+    if (!snapshot) {
+      return;
+    }
+
+    restoreSnapshot(snapshot);
+    dismissUndo();
+  }, [dismissUndo, restoreSnapshot]);
 
   const loadQueue = useCallback((withError: boolean, useSeedOnly = false) => {
     if (initTimeoutRef.current !== null) {
@@ -89,8 +143,9 @@ export function QueueProvider({
       if (initTimeoutRef.current !== null) {
         clearTimeout(initTimeoutRef.current);
       }
+      clearUndoTimeout();
     };
-  }, [loadQueue, simulateInitError]);
+  }, [loadQueue, simulateInitError, clearUndoTimeout]);
 
   useEffect(() => {
     const engine = createQueueEngine({
@@ -150,14 +205,37 @@ export function QueueProvider({
     dispatch(queueActions.retry(taskId));
   }, []);
 
-  const deleteTask = useCallback((taskId: string) => {
-    engineRef.current?.clearTaskTimer(taskId);
-    dispatch(queueActions.delete(taskId));
-  }, []);
+  const deleteTask = useCallback(
+    (taskId: string) => {
+      const task = stateRef.current.tasks.find((item) => item.id === taskId);
+      if (!task) {
+        return;
+      }
+
+      offerUndo('Задача удалена', stateRef.current.tasks);
+      engineRef.current?.clearTaskTimer(taskId);
+      dispatch(queueActions.delete(taskId));
+    },
+    [offerUndo],
+  );
 
   const clearDone = useCallback(() => {
+    const doneCount = stateRef.current.tasks.filter(
+      (task) => task.status === 'done',
+    ).length;
+
+    if (doneCount === 0) {
+      return;
+    }
+
+    offerUndo(
+      doneCount === 1
+        ? 'Завершённая задача удалена'
+        : `Удалено ${doneCount} завершённых задач`,
+      stateRef.current.tasks,
+    );
     dispatch(queueActions.clearDone());
-  }, []);
+  }, [offerUndo]);
 
   const reload = useCallback(() => {
     for (const task of stateRef.current.tasks) {
@@ -190,6 +268,9 @@ export function QueueProvider({
       deleteTask,
       clearDone,
       reload,
+      undoOffer,
+      undoLastAction,
+      dismissUndo,
     }),
     [
       state,
@@ -205,6 +286,9 @@ export function QueueProvider({
       deleteTask,
       clearDone,
       reload,
+      undoOffer,
+      undoLastAction,
+      dismissUndo,
     ],
   );
 

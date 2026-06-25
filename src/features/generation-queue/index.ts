@@ -1,5 +1,5 @@
 export type { QueueAction, QueueState } from './model/queueReducer';
-export type { QueueContextValue, QueueInitStatus } from './model/queueContext';
+export type { QueueContextValue, QueueInitStatus, QueueUndoOffer } from './model/queueContext';
 export type {
   QueueSortOrder,
   QueueStats as QueueStatsCounts,
@@ -76,3 +76,5 @@ export {
 export { ErrorState, type ErrorStateProps } from './ui/states/ErrorState';
 export { LoadingState } from './ui/states/LoadingState';
 export { GenerationStatusBar } from './ui/GenerationStatusBar';
+export { TaskList, TaskStaticList, TaskVirtualList, VIRTUALIZE_THRESHOLD } from './ui/TaskList';
+export { UndoToast, type UndoToastProps } from './ui/UndoToast';

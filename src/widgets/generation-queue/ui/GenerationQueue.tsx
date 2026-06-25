@@ -6,8 +6,8 @@ import {
   LoadingState,
   QueueStats,
   QueueToolbar,
-  TaskCard,
-  TaskRow,
+  TaskList,
+  UndoToast,
   useQueue,
 } from '@/features/generation-queue';
 
@@ -34,14 +34,10 @@ export function GenerationQueue() {
     deleteTask,
     clearDone,
     reload,
+    undoOffer,
+    undoLastAction,
+    dismissUndo,
   } = useQueue();
-
-  const taskActions = {
-    onCancel: cancelTask,
-    onRetry: retryTask,
-    onDownload: handleDownloadStub,
-    onDelete: deleteTask,
-  };
 
   const isQueueEmpty = state.tasks.length === 0;
   const isFilterEmpty = !isQueueEmpty && visibleTasks.length === 0;
@@ -52,13 +48,7 @@ export function GenerationQueue() {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Удалить ${stats.done} завершённых задач из очереди?`,
-    );
-
-    if (confirmed) {
-      clearDone();
-    }
+    clearDone();
   };
 
   return (
@@ -126,26 +116,23 @@ export function GenerationQueue() {
           {isFilterEmpty && <EmptyState variant="no-results" />}
 
           {!isQueueEmpty && !isFilterEmpty && (
-            <ul className={cn('space-y-2.5')}>
-              {visibleTasks.map((task, index) => (
-                <li
-                  key={task.id}
-                  className={cn(
-                    'list-none motion-safe:animate-queue-item-in',
-                  )}
-                  style={
-                    index < 8
-                      ? { animationDelay: `${Math.min(index * 40, 280)}ms` }
-                      : undefined
-                  }
-                >
-                  <TaskRow task={task} {...taskActions} />
-                  <TaskCard task={task} {...taskActions} />
-                </li>
-              ))}
-            </ul>
+            <TaskList
+              tasks={visibleTasks}
+              onCancel={cancelTask}
+              onRetry={retryTask}
+              onDownload={handleDownloadStub}
+              onDelete={deleteTask}
+            />
           )}
         </>
+      )}
+
+      {undoOffer && (
+        <UndoToast
+          message={undoOffer.message}
+          onUndo={undoLastAction}
+          onDismiss={dismissUndo}
+        />
       )}
       </div>
     </div>

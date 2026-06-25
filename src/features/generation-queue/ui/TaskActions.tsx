@@ -63,11 +63,15 @@ export function TaskActions({
 }: TaskActionsProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const deleteItemRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!menuOpen) {
       return;
     }
+
+    deleteItemRef.current?.focus();
 
     const handlePointerDown = (event: MouseEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) {
@@ -77,7 +81,34 @@ export function TaskActions({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        event.preventDefault();
         setMenuOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !menuRef.current) {
+        return;
+      }
+
+      const focusables = menuRef.current.querySelectorAll<HTMLElement>(
+        'button[role="menuitem"]',
+      );
+      const items = Array.from(focusables);
+      if (items.length === 0) {
+        return;
+      }
+
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first?.focus();
       }
     };
 
@@ -122,16 +153,28 @@ export function TaskActions({
       )}
 
       <div className={cn('relative')} ref={menuRef}>
-        <ActionIconButton
-          label="Дополнительные действия"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <MoreHorizontal className={cn(accentIconClass)} />
-        </ActionIconButton>
+        <div className={cn('inline-flex')}>
+          <button
+            ref={menuButtonRef}
+            type="button"
+            aria-label="Дополнительные действия"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            title="Дополнительные действия"
+            onClick={() => setMenuOpen((open) => !open)}
+            className={cn(
+              'flex size-8 items-center justify-center rounded-lg border border-era-line',
+              'bg-era-secondary text-era-fg-mute transition-colors hover:text-era-fg',
+            )}
+          >
+            <MoreHorizontal className={cn(accentIconClass)} />
+          </button>
+        </div>
 
         {menuOpen && (
           <div
             role="menu"
+            aria-label="Действия с задачей"
             className={cn(
               'absolute right-0 top-full z-10 mt-1 min-w-[140px]',
               'rounded-lg border border-era-line bg-era-card py-1 shadow-lg',
@@ -139,18 +182,20 @@ export function TaskActions({
             )}
           >
             <button
+              ref={deleteItemRef}
               type="button"
               role="menuitem"
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm',
                 'text-status-failed transition-colors hover:bg-era-bg-3',
+                'focus-visible:bg-era-bg-3 focus-visible:outline-none',
               )}
               onClick={() => {
                 onDelete(task.id);
                 setMenuOpen(false);
               }}
             >
-              <Trash2 className={cn('size-3.5')} />
+              <Trash2 className={cn('size-3.5')} aria-hidden />
               Удалить
             </button>
           </div>

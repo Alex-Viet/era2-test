@@ -17,6 +17,7 @@ export function Chip({
     <div className={cn('inline-flex shrink-0')}>
       <button
         type={type}
+        aria-pressed={selected}
         className={cn(
           'h-[34px] rounded-full px-3.5 text-[13px] font-medium transition-colors',
           selected

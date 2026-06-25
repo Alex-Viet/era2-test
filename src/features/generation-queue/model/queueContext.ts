@@ -10,6 +10,10 @@ import type { GenerationTask } from '@/entities/generation-task';
 
 export type QueueInitStatus = 'loading' | 'ready' | 'error';
 
+export interface QueueUndoOffer {
+  message: string;
+}
+
 export interface QueueContextValue {
   state: QueueState;
   initStatus: QueueInitStatus;
@@ -28,6 +32,9 @@ export interface QueueContextValue {
   deleteTask: (taskId: string) => void;
   clearDone: () => void;
   reload: () => void;
+  undoOffer: QueueUndoOffer | null;
+  undoLastAction: () => void;
+  dismissUndo: () => void;
 }
 
 export const QueueContext = createContext<QueueContextValue | null>(null);

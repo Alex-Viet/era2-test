@@ -8,6 +8,8 @@
 - **Vite** — сборщик
 - **Tailwind CSS v4** — стили
 - **React Router** — маршрутизация
+- **@tanstack/react-virtual** — виртуализация длинных списков (≥15 задач)
+- **Vitest** — юнит-тесты редьюсера и движка
 - **lucide-react** — иконки
 - **Feature-Sliced Design (FSD)** — архитектура
 
@@ -77,8 +79,19 @@ src/
 
 - `:focus-visible` — акцентное кольцо фокуса
 - `aria-live`, `role="region"` на статус-баре
-- Меню «…» закрывается по `Escape`
+- Чипы фильтров: `aria-pressed`, группы с `role="group"`
+- Список задач: `role="list"` / `listitem`, `aria-label` на строках
+- Меню «…»: `aria-expanded`, focus trap, закрытие по `Escape` с возвратом фокуса
 - Скелетоны загрузки с `aria-busy`
+
+### Бонусные возможности
+
+| Функция | Описание |
+| ------- | -------- |
+| **Юнит-тесты** | `queueReducer.test.ts`, `queueEngine.test.ts` — FSM, слоты, cancel |
+| **Undo** | Toast «Отменить» (5 с) после удаления задачи и «Очистить готовые» |
+| **Optimistic UI** | Удаление и очистка применяются мгновенно; откат через Undo |
+| **Виртуализация** | `@tanstack/react-virtual` при ≥15 видимых задач (`TaskList`) |
 
 ### Ключевые решения
 
@@ -107,6 +120,13 @@ npm run preview
 
 ```bash
 npm run lint
+```
+
+## Тесты
+
+```bash
+npm test          # один прогон
+npm run test:watch  # watch-режим
 ```
 
 ## Этапы разработки

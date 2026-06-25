@@ -45,6 +45,8 @@ export function QueueToolbar({
         )}
       >
         <div
+          role="group"
+          aria-label="Фильтр по статусу"
           className={cn(
             "flex gap-2 pb-1",
             "max-[480px]:-mx-1 max-[480px]:px-1",
@@ -54,6 +56,7 @@ export function QueueToolbar({
             <Chip
               key={chip.value}
               selected={statusFilter === chip.value}
+              aria-label={chip.label}
               onClick={() => onStatusFilterChange(chip.value)}
             >
               {chip.label}
@@ -121,6 +124,8 @@ export function QueueToolbar({
 
       {showTypeFilter && onTypeFilterChange && (
         <div
+          role="group"
+          aria-label="Фильтр по типу генерации"
           className={cn(
             "flex gap-2 overflow-x-auto pb-1",
             "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
@@ -130,6 +135,7 @@ export function QueueToolbar({
             <Chip
               key={chip.value}
               selected={typeFilter === chip.value}
+              aria-label={chip.label}
               onClick={() => onTypeFilterChange(chip.value)}
             >
               {chip.label}
