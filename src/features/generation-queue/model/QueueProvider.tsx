@@ -8,6 +8,12 @@ import {
   type ReactNode,
 } from 'react';
 import { createSeedTasks } from '@/entities/generation-task';
+import { useDebouncedValue } from '@/shared/lib/useDebouncedValue';
+import {
+  clearPersistedTasks,
+  loadPersistedTasks,
+  savePersistedTasks,
+} from '../lib/queueStorage';
 import { QueueContext, type QueueInitStatus } from './queueContext';
 import { createQueueEngine } from './queueEngine';
 import {
@@ -15,13 +21,27 @@ import {
   queueActions,
   queueReducer,
 } from './queueReducer';
+import {
+  selectQueueStats,
+  selectVisibleTasks,
+  type QueueSortOrder,
+  type QueueStatusFilter,
+  type QueueTypeFilter,
+} from './selectors';
 
 const INIT_DELAY_MS = 600;
+const SEARCH_DEBOUNCE_MS = 300;
+const PERSIST_DEBOUNCE_MS = 500;
 
 interface QueueProviderProps {
   children: ReactNode;
   /** Эмулирует сбой инициализации (для ErrorState на этапе UI). */
   simulateInitError?: boolean;
+}
+
+/** Резолвит задачи из localStorage или создаёт сид-задачи. */
+function resolveInitialTasks() {
+  return loadPersistedTasks() ?? createSeedTasks();
 }
 
 export function QueueProvider({
@@ -30,6 +50,12 @@ export function QueueProvider({
 }: QueueProviderProps) {
   const [state, dispatch] = useReducer(queueReducer, initialQueueState);
   const [initStatus, setInitStatus] = useState<QueueInitStatus>('loading');
+  const [statusFilter, setStatusFilter] = useState<QueueStatusFilter>('all');
+  const [sortOrder, setSortOrder] = useState<QueueSortOrder>('newest');
+  const [typeFilter, setTypeFilter] = useState<QueueTypeFilter>('all');
+  const [searchInput, setSearchInput] = useState('');
+
+  const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS);
 
   const stateRef = useRef(state);
   stateRef.current = state;
@@ -37,7 +63,7 @@ export function QueueProvider({
   const engineRef = useRef<ReturnType<typeof createQueueEngine> | null>(null);
   const initTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadSeed = useCallback((withError: boolean) => {
+  const loadQueue = useCallback((withError: boolean, useSeedOnly = false) => {
     if (initTimeoutRef.current !== null) {
       clearTimeout(initTimeoutRef.current);
     }
@@ -50,20 +76,21 @@ export function QueueProvider({
         return;
       }
 
-      dispatch(queueActions.init(createSeedTasks()));
+      const tasks = useSeedOnly ? createSeedTasks() : resolveInitialTasks();
+      dispatch(queueActions.init(tasks));
       setInitStatus('ready');
     }, INIT_DELAY_MS);
   }, []);
 
   useEffect(() => {
-    loadSeed(simulateInitError);
+    loadQueue(simulateInitError);
 
     return () => {
       if (initTimeoutRef.current !== null) {
         clearTimeout(initTimeoutRef.current);
       }
     };
-  }, [loadSeed, simulateInitError]);
+  }, [loadQueue, simulateInitError]);
 
   useEffect(() => {
     const engine = createQueueEngine({
@@ -79,6 +106,40 @@ export function QueueProvider({
       engineRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (initStatus !== 'ready') {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      savePersistedTasks(state.tasks);
+    }, PERSIST_DEBOUNCE_MS);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [state.tasks, initStatus]);
+
+  const viewParams = useMemo(
+    () => ({
+      statusFilter,
+      sortOrder,
+      searchQuery: debouncedSearch,
+      typeFilter,
+    }),
+    [statusFilter, sortOrder, debouncedSearch, typeFilter],
+  );
+
+  const stats = useMemo(
+    () => selectQueueStats(state.tasks),
+    [state.tasks],
+  );
+
+  const visibleTasks = useMemo(
+    () => selectVisibleTasks(state.tasks, viewParams),
+    [state.tasks, viewParams],
+  );
 
   const cancelTask = useCallback((taskId: string) => {
     engineRef.current?.clearTaskTimer(taskId);
@@ -105,14 +166,25 @@ export function QueueProvider({
       }
     }
 
+    clearPersistedTasks();
     dispatch(queueActions.init([]));
-    loadSeed(false);
-  }, [loadSeed]);
+    loadQueue(false, true);
+  }, [loadQueue]);
 
   const value = useMemo(
     () => ({
       state,
       initStatus,
+      stats,
+      visibleTasks,
+      statusFilter,
+      sortOrder,
+      typeFilter,
+      searchInput,
+      setStatusFilter,
+      setSortOrder,
+      setTypeFilter,
+      setSearchInput,
       cancelTask,
       retryTask,
       deleteTask,
@@ -122,6 +194,12 @@ export function QueueProvider({
     [
       state,
       initStatus,
+      stats,
+      visibleTasks,
+      statusFilter,
+      sortOrder,
+      typeFilter,
+      searchInput,
       cancelTask,
       retryTask,
       deleteTask,
