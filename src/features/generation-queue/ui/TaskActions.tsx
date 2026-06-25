@@ -42,9 +42,17 @@ export function TaskActions({
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [menuOpen]);
 
@@ -109,13 +117,16 @@ export function TaskActions({
 
         {menuOpen && (
           <div
+            role="menu"
             className={cn(
               'absolute right-0 top-full z-10 mt-1 min-w-[140px]',
               'rounded-lg border border-era-line bg-era-bg-2 py-1 shadow-lg',
+              'motion-safe:animate-queue-item-in',
             )}
           >
             <button
               type="button"
+              role="menuitem"
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm',
                 'text-status-failed transition-colors hover:bg-era-bg-3',

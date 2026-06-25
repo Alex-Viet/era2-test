@@ -5,7 +5,7 @@ export function HomePage() {
   return (
     <div
       className={cn(
-        'flex flex-1 flex-col items-center justify-center gap-6 px-6 py-16',
+        'flex flex-1 flex-col items-center justify-center gap-6 px-4 py-12 sm:px-6 sm:py-16',
       )}
     >
       <div className={cn('max-w-lg text-center')}>

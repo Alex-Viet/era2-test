@@ -31,6 +31,7 @@ export function EmptyState({ variant }: EmptyStateProps) {
       className={cn(
         'flex flex-col items-center justify-center rounded-xl border border-dashed',
         'border-era-line bg-era-bg-1 px-6 py-12 text-center',
+        'motion-safe:animate-queue-item-in',
       )}
     >
       <div

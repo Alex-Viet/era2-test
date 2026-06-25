@@ -23,7 +23,9 @@ export function TaskCard({
   return (
     <article
       className={cn(
-        'max-[480px]:block hidden rounded-xl border border-era-line bg-era-bg-1 p-4',
+        'block rounded-xl border border-era-line bg-era-bg-1 p-4 lg:hidden',
+        'transition-[border-color,background-color] duration-200',
+        'hover:border-era-fg-mute/25 hover:bg-era-bg-2/60',
       )}
     >
       <div className={cn('flex items-start gap-3')}>

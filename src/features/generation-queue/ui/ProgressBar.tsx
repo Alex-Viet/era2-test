@@ -26,6 +26,10 @@ export function ProgressBar({
   return (
     <div className={cn('flex min-w-0 items-center gap-2', className)}>
       <div
+        role="progressbar"
+        aria-valuenow={clamped}
+        aria-valuemin={0}
+        aria-valuemax={100}
         className={cn(
           'min-w-0 flex-1 overflow-hidden rounded-full bg-era-bg-3',
           trackSizeClasses[size],
@@ -33,21 +37,11 @@ export function ProgressBar({
       >
         <div
           className={cn(
-            'min-w-0 flex-1 overflow-hidden rounded-full bg-era-bg-3',
-            trackSizeClasses[size],
+            'h-full rounded-full bg-era-accent transition-[width] duration-300 ease-out',
+            'motion-reduce:transition-none',
           )}
-          role="progressbar"
-          aria-valuenow={clamped}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
-          <div
-            className={cn(
-              'h-full rounded-full bg-era-accent transition-[width] duration-300 ease-out',
-            )}
-            style={{ width: `${clamped}%` }}
-          />
-        </div>
+          style={{ width: `${clamped}%` }}
+        />
       </div>
       {showLabel && (
         <span className={cn('shrink-0 font-mono text-xs text-era-fg-dim')}>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
-import { cn } from '@/shared/lib';
+import { cn, useDelayedVisibility } from '@/shared/lib';
 import { IconButton } from '@/shared/ui';
 import { GEN_TYPE_LABELS } from '../lib/genTypeConfig';
 import { formatProgress } from '../lib/formatEta';
@@ -35,16 +35,18 @@ export function GenerationStatusBar() {
     [state.tasks],
   );
 
-  const isVisible =
+  const shouldShow =
     initStatus === 'ready' &&
     activeCount > 0 &&
     location.pathname !== '/queue';
+
+  const { mounted, visible } = useDelayedVisibility(shouldShow, 300);
 
   const openQueue = () => {
     navigate('/queue');
   };
 
-  if (!isVisible) {
+  if (!mounted) {
     return null;
   }
 
@@ -53,11 +55,15 @@ export function GenerationStatusBar() {
 
   return (
     <div
+      role="region"
+      aria-label="Статус активных генераций"
+      aria-live="polite"
       className={cn(
         'pointer-events-none fixed z-50',
         'max-[480px]:inset-x-0 bottom-0',
         'min-[481px]:right-6 bottom-6 w-[min(calc(100vw-3rem),360px)]',
-        'transition-[opacity,transform] duration-300 ease-out',
+        'transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none',
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3',
       )}
     >
       <div
@@ -78,7 +84,9 @@ export function GenerationStatusBar() {
             )}
           >
             <Loader2
-              className={cn('size-5 shrink-0 animate-spin text-era-accent')}
+              className={cn(
+                'size-5 shrink-0 text-era-accent motion-safe:animate-spin',
+              )}
               aria-hidden
             />
             <div className={cn('min-w-0 flex-1')}>
@@ -87,7 +95,9 @@ export function GenerationStatusBar() {
               </p>
               <div className={cn('mt-2')}>
                 <ProgressBar
-                  value={singleTask.status === 'running' ? singleTask.progress : 0}
+                  value={
+                    singleTask.status === 'running' ? singleTask.progress : 0
+                  }
                   size="sm"
                 />
               </div>
@@ -99,6 +109,7 @@ export function GenerationStatusBar() {
           <button
             type="button"
             onClick={() => setCollapsed(false)}
+            aria-expanded={false}
             className={cn(
               'flex w-full items-center justify-between gap-3 text-left',
             )}
@@ -126,6 +137,7 @@ export function GenerationStatusBar() {
               <IconButton
                 size="sm"
                 label="Свернуть"
+                aria-expanded
                 onClick={() => setCollapsed(true)}
               >
                 <ChevronDown className={cn('size-4')} />
@@ -136,14 +148,14 @@ export function GenerationStatusBar() {
               {previewTasks.map((task) => (
                 <li key={task.id}>
                   <div className={cn('flex items-center justify-between gap-2')}>
-                    <span
-                      className={cn(
-                        'truncate text-xs text-era-fg-dim',
-                      )}
-                    >
+                    <span className={cn('truncate text-xs text-era-fg-dim')}>
                       {GEN_TYPE_LABELS[task.type]} · {task.model}
                     </span>
-                    <span className={cn('shrink-0 font-mono text-xs text-era-fg-mute')}>
+                    <span
+                      className={cn(
+                        'shrink-0 font-mono text-xs text-era-fg-mute',
+                      )}
+                    >
                       {task.status === 'running'
                         ? formatProgress(task.progress)
                         : 'В очереди'}
@@ -151,7 +163,11 @@ export function GenerationStatusBar() {
                   </div>
                   {task.status === 'running' && (
                     <div className={cn('mt-1.5')}>
-                      <ProgressBar value={task.progress} size="sm" showLabel={false} />
+                      <ProgressBar
+                        value={task.progress}
+                        size="sm"
+                        showLabel={false}
+                      />
                     </div>
                   )}
                 </li>

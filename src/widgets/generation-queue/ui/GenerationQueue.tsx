@@ -62,7 +62,14 @@ export function GenerationQueue() {
   };
 
   return (
-    <div className={cn('flex flex-1 flex-col gap-6 px-6 py-10')}>
+    <div
+      className={cn(
+        'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6',
+        'px-4 py-6 max-[480px]:pb-8',
+        'sm:px-6 sm:py-8',
+        'lg:py-10',
+      )}
+    >
       <div
         className={cn(
           'flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between',
@@ -116,8 +123,18 @@ export function GenerationQueue() {
 
           {!isQueueEmpty && !isFilterEmpty && (
             <ul className={cn('space-y-3')}>
-              {visibleTasks.map((task) => (
-                <li key={task.id} className={cn('list-none')}>
+              {visibleTasks.map((task, index) => (
+                <li
+                  key={task.id}
+                  className={cn(
+                    'list-none motion-safe:animate-queue-item-in',
+                  )}
+                  style={
+                    index < 8
+                      ? { animationDelay: `${Math.min(index * 40, 280)}ms` }
+                      : undefined
+                  }
+                >
                   <TaskRow task={task} {...taskActions} />
                   <TaskCard task={task} {...taskActions} />
                 </li>

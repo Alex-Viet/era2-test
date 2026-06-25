@@ -23,8 +23,10 @@ export function TaskRow({
   return (
     <div
       className={cn(
-        'hidden min-[481px]:grid grid-cols-[auto_1fr_auto_auto] items-center gap-4',
+        'hidden grid-cols-[auto_1fr_auto_auto] items-center gap-4 lg:grid',
         'rounded-xl border border-era-line bg-era-bg-1 px-4 py-3',
+        'transition-[border-color,background-color,box-shadow] duration-200',
+        'hover:border-era-fg-mute/25 hover:bg-era-bg-2/60',
       )}
     >
       <TaskTypePreview task={task} />

@@ -41,7 +41,7 @@ export function QueueToolbar({
         className={cn(
           'flex gap-2 overflow-x-auto pb-1',
           'max-[480px]:-mx-1 max-[480px]:px-1',
-          '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          '[scrollbar-none] [&::-webkit-scrollbar]:hidden',
         )}
       >
         {QUEUE_STATUS_FILTERS.map((chip) => (
@@ -59,7 +59,8 @@ export function QueueToolbar({
         <div
           className={cn(
             'flex gap-2 overflow-x-auto pb-1',
-            '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+            'max-[480px]:-mx-1 max-[480px]:px-1',
+            '[scrollbar-none] [&::-webkit-scrollbar]:hidden',
           )}
         >
           {QUEUE_TYPE_FILTERS.map((chip) => (
