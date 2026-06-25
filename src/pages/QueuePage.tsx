@@ -1,18 +1,22 @@
-import { cn } from '@/shared/lib';
+import { cn } from "@/shared/lib";
 import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
   QueueStats,
   QueueToolbar,
   TaskCard,
   TaskRow,
   useQueue,
-} from '@/features/generation-queue';
+} from "@/features/generation-queue";
 
 function handleDownloadStub(taskId: string) {
-  console.info('[ERA2] Download stub:', taskId);
+  console.info("[ERA2] Download stub:", taskId);
 }
 
 export function QueuePage() {
   const {
+    state,
     initStatus,
     stats,
     visibleTasks,
@@ -27,6 +31,7 @@ export function QueuePage() {
     cancelTask,
     retryTask,
     deleteTask,
+    reload,
   } = useQueue();
 
   const taskActions = {
@@ -36,20 +41,25 @@ export function QueuePage() {
     onDelete: deleteTask,
   };
 
+  const isQueueEmpty = state.tasks.length === 0;
+  const isFilterEmpty = !isQueueEmpty && visibleTasks.length === 0;
+
   return (
-    <div className={cn('flex flex-1 flex-col gap-6 px-6 py-10')}>
+    <div className={cn("flex flex-1 flex-col gap-6 px-6 py-10")}>
       <div>
-        <h1 className={cn('text-2xl font-semibold tracking-tight')}>
+        <h1 className={cn("text-2xl font-semibold tracking-tight")}>
           Очередь генераций
         </h1>
-        <p className={cn('mt-2 text-era-fg-dim')}>
-          {initStatus === 'loading' && 'Загрузка очереди…'}
-          {initStatus === 'ready' && 'Этап 7 · QueueStats / QueueToolbar'}
-          {initStatus === 'error' && 'Ошибка загрузки'}
+        <p className={cn("mt-2 text-era-fg-dim")}>
+          Все ваши задачи в реальном времени
         </p>
       </div>
 
-      {initStatus === 'ready' && (
+      {initStatus === "loading" && <LoadingState />}
+
+      {initStatus === "error" && <ErrorState onRetry={reload} />}
+
+      {initStatus === "ready" && (
         <>
           <QueueStats stats={stats} />
 
@@ -64,20 +74,20 @@ export function QueuePage() {
             onTypeFilterChange={setTypeFilter}
           />
 
-          <ul className={cn('space-y-3')}>
-            {visibleTasks.length === 0 ? (
-              <li className={cn('text-sm text-era-fg-mute')}>
-                Нет задач по фильтру
-              </li>
-            ) : (
-              visibleTasks.map((task) => (
-                <li key={task.id} className={cn('list-none')}>
+          {isQueueEmpty && <EmptyState variant="no-tasks" />}
+
+          {isFilterEmpty && <EmptyState variant="no-results" />}
+
+          {!isQueueEmpty && !isFilterEmpty && (
+            <ul className={cn("space-y-3")}>
+              {visibleTasks.map((task) => (
+                <li key={task.id} className={cn("list-none")}>
                   <TaskRow task={task} {...taskActions} />
                   <TaskCard task={task} {...taskActions} />
                 </li>
-              ))
-            )}
-          </ul>
+              ))}
+            </ul>
+          )}
         </>
       )}
     </div>
